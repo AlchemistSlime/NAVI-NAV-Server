@@ -8,20 +8,22 @@ PORT = 12346
 
 def handle_client(conn):
     try:
-        data = conn.recv(1024).decode().strip()
+        data = conn.recv(1024).decode('utf-8').strip()
     except:
         data = ""
+
     if data == "/status":
+        # Возвращаем JSON с цветным статусом
         resp = json.dumps({
             "state": "ready",
             "color": "green",
-            "text": "Сервер готов к работе"
+            "text": "Сервер работает, диффузия готова"
         })
     elif data == "/generate":
         resp = "Запускаю генерацию... (имитация)"
     else:
         resp = f"Получена команда: {data}"
-    conn.sendall(resp.encode())
+    conn.sendall(resp.encode('utf-8'))
     conn.close()
 
 def run_server():

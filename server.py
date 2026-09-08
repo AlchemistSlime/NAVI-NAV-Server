@@ -2,7 +2,6 @@
 import socket
 import json
 import time
-import sys
 
 HOST = "127.0.0.1"
 PORT = 12346
@@ -12,21 +11,20 @@ def handle_client(conn):
         data = conn.recv(1024).decode().strip()
     except:
         data = ""
-    # Примеры команд
+
     if data == "/status":
-        # Возвращаем цветной статус (в ANSI)
-        status = {
+        # Пример цветного статуса в JSON
+        response = json.dumps({
             "state": "ready",
             "color": "green",
-            "text": "Сервер готов к работе"
-        }
-        response = json.dumps(status)
+            "text": "Сервер диффузии готов к работе."
+        })
     elif data == "/generate":
-        # Имитация генерации
-        response = "Генерация начата..."
-        # ... реальная генерация
+        response = "Генерация начата... (имитация)"
+        # Здесь может быть реальный код генерации
     else:
-        response = f"Неизвестная команда: {data}"
+        response = f"Основной скрипт получил: {data}"
+
     conn.sendall(response.encode())
     conn.close()
 

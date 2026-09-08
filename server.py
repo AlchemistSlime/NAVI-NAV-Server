@@ -1,41 +1,46 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import socket
 import json
-import time
+import sys
 
-HOST = "127.0.0.1"
+HOST = '127.0.0.1'
 PORT = 12346
 
-def handle_client(conn):
+def handle_connection(conn):
     try:
-        data = conn.recv(1024).decode('utf-8').strip()
+        data = conn.recv(4096).decode('utf-8').strip()
     except:
-        data = ""
+        data = ''
 
-    if data == "/status":
-        # Возвращаем JSON с цветным статусом
-        resp = json.dumps({
-            "state": "ready",
-            "color": "green",
-            "text": "Сервер работает, диффузия готова"
-        })
-    elif data == "/generate":
-        resp = "Запускаю генерацию... (имитация)"
+    if data == '/status':
+        answer = {
+            'state': 'online',
+            'color': 'green',
+            'text': 'Сервер готов к диффузии'
+        }
+        response = json.dumps(answer, ensure_ascii=False)
+    elif data == '/generate':
+        response = 'Запуск генерации... (имитация)'
+    elif data == '/hello':
+        response = 'Привет от основного скрипта!'
     else:
-        resp = f"Получена команда: {data}"
-    conn.sendall(resp.encode('utf-8'))
+        response = f'Неизвестная команда: {data}'
+
+    conn.sendall(response.encode('utf-8'))
     conn.close()
 
-def run_server():
+def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT))
         s.listen(1)
-        print(f"[+] Основной скрипт слушает на {HOST}:{PORT}")
+        print(f'[main] Слушаю {HOST}:{PORT}')
         while True:
             conn, addr = s.accept()
             with conn:
-                handle_client(conn)
+                handle_connection(conn)
 
-if __name__ == "__main__":
-    run_server()
+if __name__ == '__main__':
+    main()

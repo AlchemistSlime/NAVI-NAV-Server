@@ -1,6 +1,45 @@
-# server.py
-with open("C:/test_loaded.txt", "w") as f:
-    f.write("Скрипт загружен и запущен!")
+#!/usr/bin/env python3
+import socket
+import json
 import time
-while True:
-    time.sleep(10)   # чтобы не завершался
+import sys
+
+HOST = "127.0.0.1"
+PORT = 12346
+
+def handle_client(conn):
+    try:
+        data = conn.recv(1024).decode().strip()
+    except:
+        data = ""
+    # Примеры команд
+    if data == "/status":
+        # Возвращаем цветной статус (в ANSI)
+        status = {
+            "state": "ready",
+            "color": "green",
+            "text": "Сервер готов к работе"
+        }
+        response = json.dumps(status)
+    elif data == "/generate":
+        # Имитация генерации
+        response = "Генерация начата..."
+        # ... реальная генерация
+    else:
+        response = f"Неизвестная команда: {data}"
+    conn.sendall(response.encode())
+    conn.close()
+
+def run_server():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((HOST, PORT))
+        s.listen(1)
+        print(f"Основной скрипт слушает на {HOST}:{PORT}")
+        while True:
+            conn, addr = s.accept()
+            with conn:
+                handle_client(conn)
+
+if __name__ == "__main__":
+    run_server()

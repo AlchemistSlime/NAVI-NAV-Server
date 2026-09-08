@@ -12,14 +12,16 @@ def handle_client(conn):
     except:
         data = ""
     if data == "/status":
-        response = json.dumps({
+        resp = json.dumps({
             "state": "ready",
             "color": "green",
-            "text": "Основной скрипт работает, диффузия готова."
+            "text": "Сервер готов к работе"
         })
+    elif data == "/generate":
+        resp = "Запускаю генерацию... (имитация)"
     else:
-        response = f"Получена команда: {data}"
-    conn.sendall(response.encode())
+        resp = f"Получена команда: {data}"
+    conn.sendall(resp.encode())
     conn.close()
 
 def run_server():
@@ -27,7 +29,7 @@ def run_server():
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT))
         s.listen(1)
-        print(f"Основной скрипт слушает на {HOST}:{PORT}")
+        print(f"[+] Основной скрипт слушает на {HOST}:{PORT}")
         while True:
             conn, addr = s.accept()
             with conn:

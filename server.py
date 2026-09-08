@@ -11,20 +11,14 @@ def handle_client(conn):
         data = conn.recv(1024).decode().strip()
     except:
         data = ""
-
     if data == "/status":
-        # Пример цветного статуса в JSON
         response = json.dumps({
             "state": "ready",
             "color": "green",
-            "text": "Сервер диффузии готов к работе."
+            "text": "Основной скрипт работает, диффузия готова."
         })
-    elif data == "/generate":
-        response = "Генерация начата... (имитация)"
-        # Здесь может быть реальный код генерации
     else:
-        response = f"Основной скрипт получил: {data}"
-
+        response = f"Получена команда: {data}"
     conn.sendall(response.encode())
     conn.close()
 
